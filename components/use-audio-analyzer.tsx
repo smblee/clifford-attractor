@@ -9,16 +9,19 @@ export interface AudioData {
   volume: number
 }
 
-export function useAudioAnalyzer(enabled: boolean) {
+export type AudioSource = "microphone" | "tab"
+
+export function useAudioAnalyzer(enabled: boolean, source: AudioSource = "microphone") {
   const [audioData, setAudioData] = useState<AudioData>({
     bass: 0,
     mid: 0,
     high: 0,
     volume: 0,
   })
+  const [error, setError] = useState<string | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
-  const dataArrayRef = useRef<Uint8Array | null>(null)
+  const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | null>(null)
   const animationFrameRef = useRef<number | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
@@ -39,8 +42,47 @@ export function useAudioAnalyzer(enabled: boolean) {
 
     const initAudio = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        setError(null)
+        let stream: MediaStream
+
+        if (source === "microphone") {
+          // Capture microphone audio
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        } else {
+          // Capture tab/system audio using Screen Capture API
+          // Note: Chrome requires video to be specified even for audio-only capture
+          stream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false,
+            } as MediaTrackConstraints,
+          })
+          
+          // Check if audio track is present
+          const audioTracks = stream.getAudioTracks()
+          if (audioTracks.length === 0) {
+            // Clean up video track if present
+            stream.getTracks().forEach(track => track.stop())
+            throw new Error("No audio track in selected tab. Make sure to check 'Share audio' and select a tab with audio playing.")
+          }
+          
+          // Stop video track if present (we only need audio)
+          const videoTrack = stream.getVideoTracks()[0]
+          if (videoTrack) {
+            videoTrack.stop()
+            stream.removeTrack(videoTrack)
+          }
+        }
+
         streamRef.current = stream
+
+        // Verify we have at least one audio track
+        const audioTracks = stream.getAudioTracks()
+        if (audioTracks.length === 0) {
+          throw new Error(`No audio track available from ${source}. Please check your permissions.`)
+        }
 
         const audioContext = new AudioContext()
         audioContextRef.current = audioContext
@@ -49,8 +91,8 @@ export function useAudioAnalyzer(enabled: boolean) {
         analyser.fftSize = 512
         analyserRef.current = analyser
 
-        const source = audioContext.createMediaStreamSource(stream)
-        source.connect(analyser)
+        const audioSource = audioContext.createMediaStreamSource(stream)
+        audioSource.connect(analyser)
 
         const bufferLength = analyser.frequencyBinCount
         const dataArray = new Uint8Array(bufferLength)
@@ -93,8 +135,10 @@ export function useAudioAnalyzer(enabled: boolean) {
         }
 
         analyze()
-      } catch (error) {
-        console.error("[v0] Error accessing microphone:", error)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Unknown error"
+        console.error(`Error accessing ${source}:`, err)
+        setError(errorMessage)
       }
     }
 
@@ -111,7 +155,7 @@ export function useAudioAnalyzer(enabled: boolean) {
         audioContextRef.current.close()
       }
     }
-  }, [enabled])
+  }, [enabled, source])
 
-  return audioData
+  return { audioData, error }
 }
