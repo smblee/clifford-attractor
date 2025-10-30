@@ -12,14 +12,17 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   return (
     <ol
       data-slot="breadcrumb-list"
-      class={cn("flex flex-wrap items-center gap-1.5 break-words text-muted-foreground text-sm sm:gap-2.5", className)}
+      className={cn(
+        "flex flex-wrap items-center gap-1.5 break-words text-muted-foreground text-sm sm:gap-2.5",
+        className,
+      )}
       {...props}
     />
   )
 }
 
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
-  return <li data-slot="breadcrumb-item" class={cn("inline-flex items-center gap-1.5", className)} {...props} />
+  return <li data-slot="breadcrumb-item" className={cn("inline-flex items-center gap-1.5", className)} {...props} />
 }
 
 function BreadcrumbLink({
@@ -32,7 +35,7 @@ function BreadcrumbLink({
   const Comp = asChild ? Slot : "a"
 
   return (
-    <Comp data-slot="breadcrumb-link" class={cn("transition-colors hover:text-foreground", className)} {...props} />
+    <Comp data-slot="breadcrumb-link" className={cn("transition-colors hover:text-foreground", className)} {...props} />
   )
 }
 
@@ -43,7 +46,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
       role="link"
       aria-disabled="true"
       aria-current="page"
-      class={cn("font-normal text-foreground", className)}
+      className={cn("font-normal text-foreground", className)}
       {...props}
     />
   )
@@ -55,7 +58,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      class={cn("[&>svg]:size-3.5", className)}
+      className={cn("[&>svg]:size-3.5", className)}
       {...props}
     >
       {children ?? <ChevronRight />}
@@ -69,11 +72,11 @@ function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span"
       data-slot="breadcrumb-ellipsis"
       role="presentation"
       aria-hidden="true"
-      class={cn("flex size-9 items-center justify-center", className)}
+      className={cn("flex size-9 items-center justify-center", className)}
       {...props}
     >
-      <MoreHorizontal class="size-4" />
-      <span class="sr-only">More</span>
+      <MoreHorizontal className="size-4" />
+      <span className="sr-only">More</span>
     </span>
   )
 }

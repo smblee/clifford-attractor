@@ -11,7 +11,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="input-group"
       role="group"
-      class={cn(
+      className={cn(
         "group/input-group relative flex w-full items-center rounded-md border border-input shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
         "h-9 has-[>textarea]:h-auto",
 
@@ -62,7 +62,7 @@ function InputGroupAddon({
       role="group"
       data-slot="input-group-addon"
       data-align={align}
-      class={cn(inputGroupAddonVariants({ align }), className)}
+      className={cn(inputGroupAddonVariants({ align }), className)}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button")) {
           return
@@ -100,7 +100,7 @@ function InputGroupButton({
       type={type}
       data-size={size}
       variant={variant}
-      class={cn(inputGroupButtonVariants({ size }), className)}
+      className={cn(inputGroupButtonVariants({ size }), className)}
       {...props}
     />
   )
@@ -109,7 +109,7 @@ function InputGroupButton({
 function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
-      class={cn(
+      className={cn(
         "flex items-center gap-2 text-muted-foreground text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
         className,
       )}
@@ -122,7 +122,7 @@ function InputGroupInput({ className, ...props }: React.ComponentProps<"input">)
   return (
     <Input
       data-slot="input-group-control"
-      class={cn(
+      className={cn(
         "flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
         className,
       )}
@@ -135,7 +135,7 @@ function InputGroupTextarea({ className, ...props }: React.ComponentProps<"texta
   return (
     <Textarea
       data-slot="input-group-control"
-      class={cn(
+      className={cn(
         "flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",
         className,
       )}

@@ -30,7 +30,8 @@
   "linter": {
     "enabled": true,
     "domains": {
-      "next": "recommended"
+      "next": "recommended",
+      "react": "recommended"
     },
     "rules": {
       "recommended": true,
@@ -39,7 +40,10 @@
         // should use env.ts instead
         "noProcessEnv": "error"
       },
-      "suspicious": "warn",
+      "suspicious": {
+        "useIterableCallbackReturn": "off",
+        "noArrayIndexKey": "warn"
+      },
       "nursery": {
         "useSortedClasses": {
           "fix": "safe",
