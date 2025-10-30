@@ -59,15 +59,17 @@ export function useAudioAnalyzer(enabled: boolean, source: AudioSource = "microp
               autoGainControl: false,
             } as MediaTrackConstraints,
           })
-          
+
           // Check if audio track is present
           const audioTracks = stream.getAudioTracks()
           if (audioTracks.length === 0) {
             // Clean up video track if present
-            stream.getTracks().forEach(track => track.stop())
-            throw new Error("No audio track in selected tab. Make sure to check 'Share audio' and select a tab with audio playing.")
+            stream.getTracks().forEach((track) => track.stop())
+            throw new Error(
+              "No audio track in selected tab. Make sure to check 'Share audio' and select a tab with audio playing.",
+            )
           }
-          
+
           // Stop video track if present (we only need audio)
           const videoTrack = stream.getVideoTracks()[0]
           if (videoTrack) {

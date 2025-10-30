@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
+import { useRef } from "react"
 import * as THREE from "three"
 
 // Shader for animated static/noise background
@@ -72,7 +72,7 @@ interface StaticBackgroundProps {
 export function StaticBackground({ intensity = 0.03 }: StaticBackgroundProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const { size } = useThree()
-  
+
   // Create uniforms ref to ensure they persist
   const uniforms = useRef({
     time: { value: 0 },
@@ -101,4 +101,3 @@ export function StaticBackground({ intensity = 0.03 }: StaticBackgroundProps) {
     </mesh>
   )
 }
-

@@ -13,9 +13,9 @@ export type AudioBand = "bass" | "mid" | "high" | "volume"
 
 // Audio mapping for a single parameter
 export interface AudioMapping {
-  param: string          // Which parameter to modulate
-  band: AudioBand        // Which frequency band to use
-  intensity: number      // How much to modulate (multiplier)
+  param: string // Which parameter to modulate
+  band: AudioBand // Which frequency band to use
+  intensity: number // How much to modulate (multiplier)
 }
 
 // Calculation function signature that all attractors must implement
@@ -25,7 +25,7 @@ export type CalculateFunction = (
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) => void
 
 // Attractor configuration interface
@@ -35,6 +35,5 @@ export interface AttractorConfig {
   dimension: "2D" | "3D"
   iterations: number
   calculate: CalculateFunction
-  audioMappings?: AudioMapping[]  // Optional: custom audio reactivity mappings
+  audioMappings?: AudioMapping[] // Optional: custom audio reactivity mappings
 }
-

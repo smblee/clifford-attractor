@@ -16,7 +16,7 @@ export function useFPS(updateInterval: number = 500) {
       if (now >= lastTimeRef.current + updateInterval) {
         const deltaTime = now - lastTimeRef.current
         const currentFps = Math.round((frameCountRef.current * 1000) / deltaTime)
-        
+
         setFps(currentFps)
         frameCountRef.current = 0
         lastTimeRef.current = now
@@ -36,4 +36,3 @@ export function useFPS(updateInterval: number = 500) {
 
   return fps
 }
-

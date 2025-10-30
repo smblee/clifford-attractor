@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Peter de Jong Attractor (2D map)
 // xₙ₊₁ = sin(a·yₙ) - cos(b·xₙ)
@@ -10,7 +10,7 @@ function calculatePeterDeJong(
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   // Use classic Peter de Jong values as defaults
   const { a = 1.4, b = -2.3, c = 2.4, d = -2.1 } = params
@@ -49,10 +49,9 @@ export const peterDeJongConfig: AttractorConfig = {
   iterations: 75000,
   calculate: calculatePeterDeJong,
   audioMappings: [
-    { param: "a", band: "bass", intensity: 0.4 },    // Bass affects horizontal patterns
-    { param: "b", band: "mid", intensity: 0.4 },     // Mid affects vertical patterns
-    { param: "c", band: "high", intensity: 0.3 },    // High affects rotation
-    { param: "d", band: "volume", intensity: 0.3 },  // Volume affects overall spread
+    { param: "a", band: "bass", intensity: 0.4 }, // Bass affects horizontal patterns
+    { param: "b", band: "mid", intensity: 0.4 }, // Mid affects vertical patterns
+    { param: "c", band: "high", intensity: 0.3 }, // High affects rotation
+    { param: "d", band: "volume", intensity: 0.3 }, // Volume affects overall spread
   ],
 }
-

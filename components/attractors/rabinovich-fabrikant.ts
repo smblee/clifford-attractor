@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Rabinovich-Fabrikant Attractor (3D)
 // dx/dt = y·(z - 1 + x²) + γ·x
@@ -11,7 +11,7 @@ function calculateRabinovichFabrikant(
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   // Use classic Rabinovich-Fabrikant values as defaults
   const { alpha = 0.14, gamma = 0.1 } = params
@@ -55,8 +55,7 @@ export const rabinovichFabrikantConfig: AttractorConfig = {
   iterations: 50000,
   calculate: calculateRabinovichFabrikant,
   audioMappings: [
-    { param: "alpha", band: "bass", intensity: 0.15 },  // Bass affects plasma dynamics
-    { param: "gamma", band: "mid", intensity: 0.12 },   // Mid affects dissipation
+    { param: "alpha", band: "bass", intensity: 0.15 }, // Bass affects plasma dynamics
+    { param: "gamma", band: "mid", intensity: 0.12 }, // Mid affects dissipation
   ],
 }
-

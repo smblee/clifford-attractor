@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Halvorsen Attractor (3D chaotic system)
 // dx/dt = -a·x - 4·y - 4·z - y²
@@ -11,7 +11,7 @@ function calculateHalvorsen(
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   const { a = 1.4 } = params
   const dt = 0.005 // Time step
@@ -54,7 +54,6 @@ export const halvorsenConfig: AttractorConfig = {
   iterations: 50000,
   calculate: calculateHalvorsen,
   audioMappings: [
-    { param: "a", band: "bass", intensity: 0.4 },    // Bass affects chaos/flow intensity
+    { param: "a", band: "bass", intensity: 0.4 }, // Bass affects chaos/flow intensity
   ],
 }
-

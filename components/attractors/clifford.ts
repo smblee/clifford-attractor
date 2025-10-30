@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Clifford Attractor (2D map)
 // xₙ₊₁ = sin(a·yₙ) + c·cos(a·xₙ)
@@ -10,7 +10,7 @@ function calculateClifford(
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   // Use classic Clifford values as defaults
   const { a = -1.4, b = 1.6, c = 1.0, d = 0.7 } = params
@@ -49,10 +49,9 @@ export const cliffordConfig: AttractorConfig = {
   iterations: 75000,
   calculate: calculateClifford,
   audioMappings: [
-    { param: "a", band: "bass", intensity: 0.5 },    // Bass affects main horizontal shape
-    { param: "b", band: "mid", intensity: 0.5 },     // Mid affects main vertical shape
-    { param: "c", band: "high", intensity: 0.3 },    // High affects fine detail
-    { param: "d", band: "high", intensity: 0.3 },    // High affects fine detail
+    { param: "a", band: "bass", intensity: 0.5 }, // Bass affects main horizontal shape
+    { param: "b", band: "mid", intensity: 0.5 }, // Mid affects main vertical shape
+    { param: "c", band: "high", intensity: 0.3 }, // High affects fine detail
+    { param: "d", band: "high", intensity: 0.3 }, // High affects fine detail
   ],
 }
-

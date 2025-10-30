@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Sprott Attractor Case A (3D)
 // dx/dt = y
@@ -8,10 +8,10 @@ import { AudioData, AttractorConfig } from "./types"
 function calculateSprottA(
   positions: Float32Array,
   colors: Float32Array,
-  params: Record<string, number>,
+  _params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   const dt = 0.05
   const scale = 0.3
@@ -52,10 +52,10 @@ function calculateSprottA(
 function calculateSprottB(
   positions: Float32Array,
   colors: Float32Array,
-  params: Record<string, number>,
+  _params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   const dt = 0.08
   const scale = 0.35
@@ -96,10 +96,10 @@ function calculateSprottB(
 function calculateSprottC(
   positions: Float32Array,
   colors: Float32Array,
-  params: Record<string, number>,
+  _params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   const dt = 0.08
   const scale = 0.35
@@ -139,7 +139,7 @@ export const sprottAConfig: AttractorConfig = {
   dimension: "3D",
   iterations: 50000,
   calculate: calculateSprottA,
-  audioMappings: [],  // No parameters - Sprott attractors are parameter-free
+  audioMappings: [], // No parameters - Sprott attractors are parameter-free
 }
 
 export const sprottBConfig: AttractorConfig = {
@@ -148,7 +148,7 @@ export const sprottBConfig: AttractorConfig = {
   dimension: "3D",
   iterations: 50000,
   calculate: calculateSprottB,
-  audioMappings: [],  // No parameters - Sprott attractors are parameter-free
+  audioMappings: [], // No parameters - Sprott attractors are parameter-free
 }
 
 export const sprottCConfig: AttractorConfig = {
@@ -157,6 +157,5 @@ export const sprottCConfig: AttractorConfig = {
   dimension: "3D",
   iterations: 50000,
   calculate: calculateSprottC,
-  audioMappings: [],  // No parameters - Sprott attractors are parameter-free
+  audioMappings: [], // No parameters - Sprott attractors are parameter-free
 }
-

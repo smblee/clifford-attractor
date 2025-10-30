@@ -1,21 +1,29 @@
 "use client"
 
-import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
-import { UniversalAttractor } from "@/components/universal-attractor"
-import { StaticBackground } from "@/components/static-background"
-import { AttractorModel, BlendMode, AudioTarget } from "@/components/attractor-model"
+import { Canvas } from "@react-three/fiber"
+import { useMemo, useState } from "react"
+import { AttractorModel, type AudioTarget, type BlendMode } from "@/components/attractor-model"
 import { attractorRegistry } from "@/components/attractors"
-import { useAudioAnalyzer, AudioSource } from "@/components/use-audio-analyzer"
-import { useFPS } from "@/hooks/use-fps"
-import { useState, useMemo } from "react"
-import { Slider } from "@/components/ui/slider"
+import { StaticBackground } from "@/components/static-background"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
+import { UniversalAttractor } from "@/components/universal-attractor"
+import { type AudioSource, useAudioAnalyzer } from "@/components/use-audio-analyzer"
+import { useFPS } from "@/hooks/use-fps"
 
 // Define attractor types and their configurations
-type AttractorType = "clifford" | "halvorsen" | "aizawa" | "peter-de-jong" | "rabinovich-fabrikant" | "sprott-a" | "sprott-b" | "sprott-c"
+type AttractorType =
+  | "clifford"
+  | "halvorsen"
+  | "aizawa"
+  | "peter-de-jong"
+  | "rabinovich-fabrikant"
+  | "sprott-a"
+  | "sprott-b"
+  | "sprott-c"
 
 interface AttractorConfig {
   name: string
@@ -145,7 +153,7 @@ const attractorConfigs: Record<AttractorType, AttractorConfig> = {
 export default function Page() {
   // State for selected attractor type
   const [attractorType, setAttractorType] = useState<AttractorType>("clifford")
-  
+
   // State for parameters (generic)
   const [params, setParams] = useState<Record<string, number>>(() => {
     const config = attractorConfigs[attractorType]
@@ -159,24 +167,24 @@ export default function Page() {
   const [audioReactive, setAudioReactive] = useState(false)
   const [audioSource, setAudioSource] = useState<AudioSource>("microphone")
   const { audioData, error: audioError } = useAudioAnalyzer(audioReactive, audioSource)
-  
+
   // Model integration state
   const [modelEnabled, setModelEnabled] = useState(false)
-  const [blendMode, setBlendMode] = useState<BlendMode>("model-primary")  // Default to model-primary for cleaner look
+  const [blendMode, setBlendMode] = useState<BlendMode>("model-primary") // Default to model-primary for cleaner look
   const [audioTarget, setAudioTarget] = useState<AudioTarget>("both")
   const [effectIntensity, setEffectIntensity] = useState(0.8)
-  const [modelScale, setModelScale] = useState(20.0)  // Default 20x bigger
-  
+  const [modelScale, setModelScale] = useState(20.0) // Default 20x bigger
+
   // Simplified particle projection parameters
   const [particleSize, setParticleSize] = useState(0.015)
   const [particleCount, setParticleCount] = useState(10000)
   const [surfaceOffset, setSurfaceOffset] = useState(0.05)
-  
+
   // Rotation controls (in radians)
-  const [rotationX, setRotationX] = useState(Math.PI / 2)  // 90 degrees
+  const [rotationX, setRotationX] = useState(Math.PI / 2) // 90 degrees
   const [rotationY, setRotationY] = useState(0)
   const [rotationZ, setRotationZ] = useState(0)
-  
+
   // Track FPS
   const fps = useFPS(50) // Update every 500ms
 
@@ -187,10 +195,14 @@ export default function Page() {
   const particleOpacity = useMemo(() => {
     if (!modelEnabled) return 0.4
     switch (blendMode) {
-      case "model-primary": return 0.0  // Hide particles completely when model is primary
-      case "equal": return 0.15  // Very subtle particles
-      case "particles-primary": return 0.5
-      default: return 0.4
+      case "model-primary":
+        return 0.0 // Hide particles completely when model is primary
+      case "equal":
+        return 0.15 // Very subtle particles
+      case "particles-primary":
+        return 0.5
+      default:
+        return 0.4
     }
   }, [blendMode, modelEnabled])
 
@@ -215,7 +227,9 @@ export default function Page() {
   }, [audioReactive, audioTarget, audioData])
 
   const particleAudioReactive = useMemo(() => {
-    return audioReactive && (audioTarget === "both" || audioTarget === "particles-only" || audioTarget === "different-bands")
+    return (
+      audioReactive && (audioTarget === "both" || audioTarget === "particles-only" || audioTarget === "different-bands")
+    )
   }, [audioReactive, audioTarget])
 
   // Handle attractor type change
@@ -240,19 +254,19 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full h-screen bg-black">
+    <div class="h-screen w-full bg-black">
       {/* 3D Canvas */}
       <Canvas camera={{ position: [0, 0, 5], fov: 75 }} gl={{ antialias: true }}>
         <color attach="background" args={["#000000"]} />
-        
+
         {/* Subtle static background */}
         <StaticBackground intensity={0.03} />
-        
+
         {/* Lighting for the model */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[-10, -10, -5]} intensity={0.5} />
-        
+
         {/* Attractor particles */}
         <UniversalAttractor
           type={attractorType}
@@ -261,7 +275,7 @@ export default function Page() {
           audioData={particleAudioData}
           opacity={particleOpacity}
         />
-        
+
         {/* GLB Model with particle projection */}
         {modelEnabled && (
           <AttractorModel
@@ -282,7 +296,7 @@ export default function Page() {
             rotationZ={rotationZ}
           />
         )}
-        
+
         <OrbitControls
           enableDamping
           dampingFactor={0.05}
@@ -294,39 +308,37 @@ export default function Page() {
       </Canvas>
 
       {/* Title and instructions */}
-      <div className="absolute top-6 left-6 text-white font-mono">
-        <h1 className="text-2xl font-bold mb-2">{currentConfig.name} Attractor</h1>
-        <p className="text-sm text-white/70 mb-1">{currentConfig.description}</p>
-        <p className="text-xs text-white/50 mb-1">Drag to rotate • Scroll to zoom</p>
-        <p className="text-xs text-white/40">{attractorRegistry[attractorType].dimension}</p>
+      <div class="absolute top-6 left-6 font-mono text-white">
+        <h1 class="mb-2 font-bold text-2xl">{currentConfig.name} Attractor</h1>
+        <p class="mb-1 text-sm text-white/70">{currentConfig.description}</p>
+        <p class="mb-1 text-white/50 text-xs">Drag to rotate • Scroll to zoom</p>
+        <p class="text-white/40 text-xs">{attractorRegistry[attractorType].dimension}</p>
       </div>
 
       {/* FPS indicator */}
-      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 font-mono">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-white/50">FPS</span>
-          <span className={`text-lg font-bold ${
-            fps >= 50 ? 'text-green-400' : 
-            fps >= 30 ? 'text-yellow-400' : 
-            'text-red-400'
-          }`}>
+      <div class="-translate-x-1/2 absolute top-6 left-1/2 transform rounded-lg border border-white/20 bg-black/80 px-4 py-2 font-mono backdrop-blur-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-white/50 text-xs">FPS</span>
+          <span
+            class={`font-bold text-lg ${fps >= 50 ? "text-green-400" : fps >= 30 ? "text-yellow-400" : "text-red-400"}`}
+          >
             {fps}
           </span>
         </div>
       </div>
 
       {/* Control panel */}
-      <div className="absolute top-6 right-6 bg-black/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 w-80 font-mono max-h-[90vh] overflow-y-auto">
+      <div class="absolute top-6 right-6 max-h-[90vh] w-80 overflow-y-auto rounded-lg border border-white/20 bg-black/80 p-6 font-mono backdrop-blur-sm">
         {/* Attractor selector */}
-        <div className="mb-6">
-          <label className="text-white text-sm font-bold mb-2 block">Attractor Type</label>
+        <div class="mb-6">
+          <label class="mb-2 block font-bold text-sm text-white">Attractor Type</label>
           <Select value={attractorType} onValueChange={(value) => handleAttractorChange(value as AttractorType)}>
-            <SelectTrigger className="w-full bg-white/10 border-white/20 text-white">
+            <SelectTrigger class="w-full border-white/20 bg-white/10 text-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-black/95 border-white/20">
+            <SelectContent class="border-white/20 bg-black/95">
               {Object.entries(attractorConfigs).map(([key, config]) => (
-                <SelectItem key={key} value={key} className="text-white">
+                <SelectItem key={key} value={key} class="text-white">
                   {config.name} ({config.dimension})
                 </SelectItem>
               ))}
@@ -335,72 +347,71 @@ export default function Page() {
         </div>
 
         {/* Model integration controls */}
-        <div className="mb-6 pb-6 border-b border-white/20">
-          <div className="flex items-center justify-between mb-3">
+        <div class="mb-6 border-white/20 border-b pb-6">
+          <div class="mb-3 flex items-center justify-between">
             <div>
-              <label className="text-white text-sm font-bold">GLB Model Engraving</label>
-              <p className="text-xs text-white/50 mt-1">Engrave attractor onto model</p>
+              <label class="font-bold text-sm text-white">GLB Model Engraving</label>
+              <p class="mt-1 text-white/50 text-xs">Engrave attractor onto model</p>
             </div>
             <Switch checked={modelEnabled} onCheckedChange={setModelEnabled} />
           </div>
-          
-          {modelEnabled && (
-            <div className="space-y-4 mt-4">
 
+          {modelEnabled && (
+            <div class="mt-4 space-y-4">
               {/* Blend mode selector */}
               <div>
-                <label className="text-white text-xs font-bold mb-2 block">Blend Mode</label>
+                <label class="mb-2 block font-bold text-white text-xs">Blend Mode</label>
                 <Select value={blendMode} onValueChange={(value) => setBlendMode(value as BlendMode)}>
-                  <SelectTrigger className="w-full bg-white/10 border-white/20 text-white text-xs">
+                  <SelectTrigger class="w-full border-white/20 bg-white/10 text-white text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/95 border-white/20">
-                    <SelectItem value="model-primary" className="text-white text-xs">
+                  <SelectContent class="border-white/20 bg-black/95">
+                    <SelectItem value="model-primary" class="text-white text-xs">
                       Model Primary
                     </SelectItem>
-                    <SelectItem value="equal" className="text-white text-xs">
+                    <SelectItem value="equal" class="text-white text-xs">
                       Equal Blend
                     </SelectItem>
-                    <SelectItem value="particles-primary" className="text-white text-xs">
+                    <SelectItem value="particles-primary" class="text-white text-xs">
                       Particles Primary
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-white/40 mt-1">Visual balance</p>
+                <p class="mt-1 text-white/40 text-xs">Visual balance</p>
               </div>
 
               {/* Audio target selector */}
               {audioReactive && (
                 <div>
-                  <label className="text-white text-xs font-bold mb-2 block">Audio Target</label>
+                  <label class="mb-2 block font-bold text-white text-xs">Audio Target</label>
                   <Select value={audioTarget} onValueChange={(value) => setAudioTarget(value as AudioTarget)}>
-                    <SelectTrigger className="w-full bg-white/10 border-white/20 text-white text-xs">
+                    <SelectTrigger class="w-full border-white/20 bg-white/10 text-white text-xs">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-black/95 border-white/20">
-                      <SelectItem value="both" className="text-white text-xs">
+                    <SelectContent class="border-white/20 bg-black/95">
+                      <SelectItem value="both" class="text-white text-xs">
                         Both
                       </SelectItem>
-                      <SelectItem value="model-only" className="text-white text-xs">
+                      <SelectItem value="model-only" class="text-white text-xs">
                         Model Only
                       </SelectItem>
-                      <SelectItem value="particles-only" className="text-white text-xs">
+                      <SelectItem value="particles-only" class="text-white text-xs">
                         Particles Only
                       </SelectItem>
-                      <SelectItem value="different-bands" className="text-white text-xs">
+                      <SelectItem value="different-bands" class="text-white text-xs">
                         Different Bands
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-white/40 mt-1">What reacts to audio</p>
+                  <p class="mt-1 text-white/40 text-xs">What reacts to audio</p>
                 </div>
               )}
 
               {/* Effect intensity slider */}
               <div>
-                <label className="text-white text-xs flex justify-between mb-2">
+                <label class="mb-2 flex justify-between text-white text-xs">
                   <span>Effect Intensity</span>
-                  <span className="text-white/70">{effectIntensity.toFixed(2)}</span>
+                  <span class="text-white/70">{effectIntensity.toFixed(2)}</span>
                 </label>
                 <Slider
                   value={[effectIntensity]}
@@ -408,15 +419,15 @@ export default function Page() {
                   min={0}
                   max={3}
                   step={0.1}
-                  className="w-full"
+                  class="w-full"
                 />
               </div>
 
               {/* Model scale slider */}
               <div>
-                <label className="text-white text-xs flex justify-between mb-2">
+                <label class="mb-2 flex justify-between text-white text-xs">
                   <span>Model Scale</span>
-                  <span className="text-white/70">{modelScale.toFixed(1)}x</span>
+                  <span class="text-white/70">{modelScale.toFixed(1)}x</span>
                 </label>
                 <Slider
                   value={[modelScale]}
@@ -424,19 +435,19 @@ export default function Page() {
                   min={1}
                   max={20}
                   step={0.5}
-                  className="w-full"
+                  class="w-full"
                 />
               </div>
 
               {/* Particle projection controls */}
-              <div className="pt-4 border-t border-white/20">
-                <h4 className="text-white text-xs font-bold mb-3">Particle Projection</h4>
-                
+              <div class="border-white/20 border-t pt-4">
+                <h4 class="mb-3 font-bold text-white text-xs">Particle Projection</h4>
+
                 {/* Particle Size */}
-                <div className="mb-3">
-                  <label className="text-white text-xs flex justify-between mb-2">
+                <div class="mb-3">
+                  <label class="mb-2 flex justify-between text-white text-xs">
                     <span>Particle Size</span>
-                    <span className="text-white/70">{particleSize.toFixed(3)}</span>
+                    <span class="text-white/70">{particleSize.toFixed(3)}</span>
                   </label>
                   <Slider
                     value={[particleSize]}
@@ -444,16 +455,16 @@ export default function Page() {
                     min={0.001}
                     max={0.1}
                     step={0.001}
-                    className="w-full"
+                    class="w-full"
                   />
-                  <p className="text-xs text-white/40 mt-1">Size of projected particles</p>
+                  <p class="mt-1 text-white/40 text-xs">Size of projected particles</p>
                 </div>
 
                 {/* Particle Count */}
-                <div className="mb-3">
-                  <label className="text-white text-xs flex justify-between mb-2">
+                <div class="mb-3">
+                  <label class="mb-2 flex justify-between text-white text-xs">
                     <span>Particle Count</span>
-                    <span className="text-white/70">{particleCount.toLocaleString()}</span>
+                    <span class="text-white/70">{particleCount.toLocaleString()}</span>
                   </label>
                   <Slider
                     value={[particleCount]}
@@ -461,16 +472,16 @@ export default function Page() {
                     min={1000}
                     max={30000}
                     step={1000}
-                    className="w-full"
+                    class="w-full"
                   />
-                  <p className="text-xs text-white/40 mt-1">Number of particles on surface</p>
+                  <p class="mt-1 text-white/40 text-xs">Number of particles on surface</p>
                 </div>
 
                 {/* Surface Offset */}
-                <div className="mb-3">
-                  <label className="text-white text-xs flex justify-between mb-2">
+                <div class="mb-3">
+                  <label class="mb-2 flex justify-between text-white text-xs">
                     <span>Surface Offset</span>
-                    <span className="text-white/70">{surfaceOffset.toFixed(3)}</span>
+                    <span class="text-white/70">{surfaceOffset.toFixed(3)}</span>
                   </label>
                   <Slider
                     value={[surfaceOffset]}
@@ -478,20 +489,20 @@ export default function Page() {
                     min={0}
                     max={0.5}
                     step={0.01}
-                    className="w-full"
+                    class="w-full"
                   />
-                  <p className="text-xs text-white/40 mt-1">Distance from model surface</p>
+                  <p class="mt-1 text-white/40 text-xs">Distance from model surface</p>
                 </div>
 
                 {/* Rotation Controls */}
-                <div className="pt-3 border-t border-white/20">
-                  <h5 className="text-white text-xs font-bold mb-2">Rotation</h5>
-                  
+                <div class="border-white/20 border-t pt-3">
+                  <h5 class="mb-2 font-bold text-white text-xs">Rotation</h5>
+
                   {/* Rotation X */}
-                  <div className="mb-2">
-                    <label className="text-white text-xs flex justify-between mb-1">
+                  <div class="mb-2">
+                    <label class="mb-1 flex justify-between text-white text-xs">
                       <span>X-Axis</span>
-                      <span className="text-white/70">{(rotationX * 180 / Math.PI).toFixed(0)}°</span>
+                      <span class="text-white/70">{((rotationX * 180) / Math.PI).toFixed(0)}°</span>
                     </label>
                     <Slider
                       value={[rotationX]}
@@ -499,15 +510,15 @@ export default function Page() {
                       min={-Math.PI}
                       max={Math.PI}
                       step={0.01}
-                      className="w-full"
+                      class="w-full"
                     />
                   </div>
 
                   {/* Rotation Y */}
-                  <div className="mb-2">
-                    <label className="text-white text-xs flex justify-between mb-1">
+                  <div class="mb-2">
+                    <label class="mb-1 flex justify-between text-white text-xs">
                       <span>Y-Axis</span>
-                      <span className="text-white/70">{(rotationY * 180 / Math.PI).toFixed(0)}°</span>
+                      <span class="text-white/70">{((rotationY * 180) / Math.PI).toFixed(0)}°</span>
                     </label>
                     <Slider
                       value={[rotationY]}
@@ -515,15 +526,15 @@ export default function Page() {
                       min={-Math.PI}
                       max={Math.PI}
                       step={0.01}
-                      className="w-full"
+                      class="w-full"
                     />
                   </div>
 
                   {/* Rotation Z */}
-                  <div className="mb-2">
-                    <label className="text-white text-xs flex justify-between mb-1">
+                  <div class="mb-2">
+                    <label class="mb-1 flex justify-between text-white text-xs">
                       <span>Z-Axis</span>
-                      <span className="text-white/70">{(rotationZ * 180 / Math.PI).toFixed(0)}°</span>
+                      <span class="text-white/70">{((rotationZ * 180) / Math.PI).toFixed(0)}°</span>
                     </label>
                     <Slider
                       value={[rotationZ]}
@@ -531,7 +542,7 @@ export default function Page() {
                       min={-Math.PI}
                       max={Math.PI}
                       step={0.01}
-                      className="w-full"
+                      class="w-full"
                     />
                   </div>
                 </div>
@@ -541,59 +552,59 @@ export default function Page() {
         </div>
 
         {/* Audio reactive toggle */}
-        <div className="mb-6 pb-6 border-b border-white/20">
-          <div className="flex items-center justify-between mb-3">
+        <div class="mb-6 border-white/20 border-b pb-6">
+          <div class="mb-3 flex items-center justify-between">
             <div>
-              <label className="text-white text-sm font-bold">Audio Reactive</label>
-              <p className="text-xs text-white/50 mt-1">React to audio input</p>
+              <label class="font-bold text-sm text-white">Audio Reactive</label>
+              <p class="mt-1 text-white/50 text-xs">React to audio input</p>
             </div>
             <Switch checked={audioReactive} onCheckedChange={setAudioReactive} />
           </div>
-          
+
           {audioReactive && (
             <>
-              <div className="mb-3">
-                <label className="text-white text-xs font-bold mb-2 block">Audio Source</label>
+              <div class="mb-3">
+                <label class="mb-2 block font-bold text-white text-xs">Audio Source</label>
                 <Select value={audioSource} onValueChange={(value) => setAudioSource(value as AudioSource)}>
-                  <SelectTrigger className="w-full bg-white/10 border-white/20 text-white text-xs">
+                  <SelectTrigger class="w-full border-white/20 bg-white/10 text-white text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/95 border-white/20">
-                    <SelectItem value="microphone" className="text-white text-xs">
+                  <SelectContent class="border-white/20 bg-black/95">
+                    <SelectItem value="microphone" class="text-white text-xs">
                       🎤 Microphone
                     </SelectItem>
-                    <SelectItem value="tab" className="text-white text-xs">
+                    <SelectItem value="tab" class="text-white text-xs">
                       🎵 Tab Audio (Music/Video)
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 {audioSource === "tab" ? (
-                  <p className="text-xs text-white/40 mt-1">Select a tab with audio playing</p>
+                  <p class="mt-1 text-white/40 text-xs">Select a tab with audio playing</p>
                 ) : (
-                  <p className="text-xs text-white/40 mt-1">Uses your microphone</p>
+                  <p class="mt-1 text-white/40 text-xs">Uses your microphone</p>
                 )}
               </div>
 
               {audioError && (
-                <div className="mb-3 p-2 bg-red-500/20 border border-red-500/30 rounded text-xs text-red-200">
+                <div class="mb-3 rounded border border-red-500/30 bg-red-500/20 p-2 text-red-200 text-xs">
                   {audioError}
                 </div>
               )}
 
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between text-white/70">
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between text-white/70">
                   <span>Bass</span>
                   <span>{(audioData.bass * 100).toFixed(0)}%</span>
                 </div>
-                <div className="flex justify-between text-white/70">
+                <div class="flex justify-between text-white/70">
                   <span>Mid</span>
                   <span>{(audioData.mid * 100).toFixed(0)}%</span>
                 </div>
-                <div className="flex justify-between text-white/70">
+                <div class="flex justify-between text-white/70">
                   <span>High</span>
                   <span>{(audioData.high * 100).toFixed(0)}%</span>
                 </div>
-                <div className="flex justify-between text-white/70">
+                <div class="flex justify-between text-white/70">
                   <span>Volume</span>
                   <span>{(audioData.volume * 100).toFixed(0)}%</span>
                 </div>
@@ -604,13 +615,13 @@ export default function Page() {
 
         {/* Dynamic parameter controls */}
         {currentConfig.params.length > 0 && (
-          <div className="space-y-4 mb-6">
-            <h3 className="text-white text-sm font-bold">Parameters</h3>
+          <div class="mb-6 space-y-4">
+            <h3 class="font-bold text-sm text-white">Parameters</h3>
             {currentConfig.params.map((param) => (
               <div key={param.key}>
-                <label className="text-white text-sm flex justify-between mb-2">
+                <label class="mb-2 flex justify-between text-sm text-white">
                   <span>{param.name}</span>
-                  <span className="text-white/70">{(params[param.key] || 0).toFixed(2)}</span>
+                  <span class="text-white/70">{(params[param.key] || 0).toFixed(2)}</span>
                 </label>
                 <Slider
                   value={[params[param.key] || param.default]}
@@ -618,7 +629,7 @@ export default function Page() {
                   min={param.min}
                   max={param.max}
                   step={param.step}
-                  className="w-full"
+                  class="w-full"
                 />
               </div>
             ))}
@@ -627,16 +638,16 @@ export default function Page() {
 
         {/* Presets */}
         {currentConfig.presets.length > 0 && (
-          <div className="pt-6 border-t border-white/20">
-            <h3 className="text-white text-sm font-bold mb-3">Presets</h3>
-            <div className="grid grid-cols-2 gap-2">
+          <div class="border-white/20 border-t pt-6">
+            <h3 class="mb-3 font-bold text-sm text-white">Presets</h3>
+            <div class="grid grid-cols-2 gap-2">
               {currentConfig.presets.map((preset) => (
                 <Button
                   key={preset.name}
                   onClick={() => loadPreset(preset)}
                   variant="outline"
                   size="sm"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
+                  class="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white"
                 >
                   {preset.name}
                 </Button>

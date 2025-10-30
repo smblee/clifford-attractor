@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { AudioData, AttractorConfig } from "./types"
+import type { AttractorConfig, AudioData } from "./types"
 
 // Aizawa Attractor (3D)
 // dx/dt = (z - b)·x - d·y
@@ -11,7 +11,7 @@ function calculateAizawa(
   params: Record<string, number>,
   iterations: number,
   audioReactive: boolean,
-  audioData: AudioData
+  audioData: AudioData,
 ) {
   // Use classic Aizawa values as defaults
   const { a = 0.95, b = 0.7, c = 0.6, d = 3.5, e = 0.25, f = 0.1 } = params
@@ -54,10 +54,9 @@ export const aizawaConfig: AttractorConfig = {
   iterations: 50000,
   calculate: calculateAizawa,
   audioMappings: [
-    { param: "a", band: "bass", intensity: 0.3 },    // Bass affects main dynamics
-    { param: "b", band: "mid", intensity: 0.3 },     // Mid affects torus shape
-    { param: "d", band: "high", intensity: 0.4 },    // High affects rotation speed
-    { param: "e", band: "volume", intensity: 0.2 },  // Volume affects overall complexity
+    { param: "a", band: "bass", intensity: 0.3 }, // Bass affects main dynamics
+    { param: "b", band: "mid", intensity: 0.3 }, // Mid affects torus shape
+    { param: "d", band: "high", intensity: 0.4 }, // High affects rotation speed
+    { param: "e", band: "volume", intensity: 0.2 }, // Volume affects overall complexity
   ],
 }
-
